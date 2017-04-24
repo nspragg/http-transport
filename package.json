@@ -1,0 +1,70 @@
+{
+  "name": "flashheart",
+  "version": "2.7.1",
+  "description": "A fully-featured REST client built for ease-of-use and resilience",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "lint": "jshint .",
+    "coverage": "istanbul cover _mocha -- -R dot",
+    "posttest": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/bbc/flashheart.git"
+  },
+  "keywords": [
+    "rest client",
+    "flashheart",
+    "cache",
+    "circuit",
+    "breaker",
+    "rest",
+    "http",
+    "json",
+    "client"
+  ],
+  "author": "ibl-team@lists.forge.bbc.co.uk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bbc/flashheart/issues"
+  },
+  "homepage": "https://github.com/bbc/flashheart#readme",
+  "devDependencies": {
+    "async": "^2.0.0",
+    "chai": "^3.2.0",
+    "codeclimate-test-reporter": "^0.4.0",
+    "istanbul": "^0.4.2",
+    "jshint": "^2.8.0",
+    "mocha": "^3.0.2",
+    "nock": "^9.0.4",
+    "sinon": "^1.15.3",
+    "super": "^0.2.3"
+  },
+  "jshintConfig": {
+    "quotmark": "single",
+    "unused": true,
+    "undef": true,
+    "node": true,
+    "esnext": true,
+    "globals": {
+      "describe": false,
+      "it": false,
+      "before": false,
+      "beforeEach": false,
+      "after": false,
+      "afterEach": false
+    }
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "debug": "^2.2.0",
+    "koa-compose": "^4.0.0",
+    "levee": "^1.2.0",
+    "lodash": "^4.2.0",
+    "request": "2.78.0",
+    "retry": "^0.10.0",
+    "simple-rate-limiter": "^0.2.3",
+    "wreck": "^5.6.0"
+  }
+}
