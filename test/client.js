@@ -5,6 +5,7 @@ const nock = require('nock');
 
 const Blackadder = require('..');
 const toJson = require('../lib/plugins/asJson');
+const toError = require('../lib/plugins/toError');
 
 const url = 'http://www.example.com/';
 const host = 'http://www.example.com';
@@ -16,6 +17,26 @@ const simpleResponseBody = 'Illegitimi non carborundum';
 const responseBody = {
   foo: 'bar'
 };
+
+
+function assertResponse(response, expected) {
+  assert.ok(expected);
+
+  return response
+    .catch(assert.ifError)
+    .then((actual) => assert.deepEqual(actual, expected));
+}
+
+function assertFailure(promise, message) {
+  return promise
+    .then(() => assert.ok(false, 'Promise should have failed'))
+    .catch((e) => {
+      assert.ok(e)
+      if (message) {
+        assert.equal(e.message, message);
+      }
+    });
+}
 
 describe('Blackadder', () => {
   beforeEach(() => {
@@ -71,18 +92,17 @@ describe('Blackadder', () => {
       });
   });
 
-  it('returns an error for a non 200 response', () => {
+  it.only('returns an error for a non 200 response', () => {
     nock.cleanAll();
     api.get(path).reply(500);
 
     const client = Blackadder.createClient();
-    return client
+    const response = client
+      .use(toError())
       .get(url)
-      .asBody()
-      .catch((err) => {
-        assert(err);
-        assert.equal(err.message, 'Received HTTP code 500 for GET http://www.example.com/');
-      });
+      .asBody();
+
+    return assertFailure(response, 'Received HTTP code 500 for GET http://www.example.com/')
   });
 
   it('includes the status code in the error for a non 200 response', () => {
