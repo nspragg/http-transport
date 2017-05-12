@@ -6,6 +6,7 @@ const nock = require('nock');
 const Blackadder = require('..');
 const toJson = require('../lib/plugins/asJson');
 const toError = require('../lib/plugins/toError');
+const timeout = require('../lib/plugins/timeout');
 
 const url = 'http://www.example.com/';
 const host = 'http://www.example.com';
@@ -92,7 +93,24 @@ describe('Blackadder', () => {
       });
   });
 
-  it.only('returns an error for a non 200 response', () => {
+  describe('.timeout', () => {
+    it('sets the a timeout', () => {
+      nock.cleanAll();
+      api.get('/')
+        .socketDelay(1000)
+        .reply(200, simpleResponseBody);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .use(timeout(20))
+        .get(url)
+        .asBody();
+
+      return assertFailure(response, 'Request failed for http://www.example.com/ ESOCKETTIMEDOUT');
+    });
+  })
+
+  it('returns an error for a non 200 response', () => {
     nock.cleanAll();
     api.get(path).reply(500);
 
@@ -128,9 +146,13 @@ describe('Blackadder', () => {
     });
 
     const client = Blackadder.createClient();
-    return client
+    const response = client
+      .use(toError())
       .get(url)
-      .asBody()
+      .asBody();
+
+    return response
+      .then(() => assert.ok(false, 'Promise should have failed'))
       .catch((err) => {
         assert(err);
         assert.equal(err.headers['www-authenticate'], 'Bearer realm="/"');
