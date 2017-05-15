@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
-    "lint": "jshint .",
+    "lint": "eslint ./src ./test",
     "coverage": "istanbul cover _mocha -- -R dot",
     "posttest": "npm run lint"
   },
@@ -31,15 +31,14 @@
   },
   "homepage": "https://github.com/bbc/flashheart#readme",
   "devDependencies": {
-    "async": "^2.0.0",
-    "chai": "^3.2.0",
+    "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.4.0",
     "istanbul": "^0.4.2",
-    "jshint": "^2.8.0",
+    "eslint": "^3.11.1",
     "mocha": "^3.0.2",
     "nock": "^9.0.4",
-    "sinon": "^1.15.3",
-    "super": "^0.2.3"
+    "jsdoc": "^3.4.3",
+    "sinon": "^1.15.3"
   },
   "jshintConfig": {
     "quotmark": "single",
@@ -59,7 +58,6 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "koa-compose": "^4.0.0",
-    "request": "2.78.0",
-    "wreck": "^5.6.0"
+    "request": "2.78.0"
   }
 }
