@@ -2,7 +2,7 @@
 
 const assert = require('chai').assert;
 const nock = require('nock');
-var sinon = require('sinon');
+const sinon = require('sinon');
 
 const Blackadder = require('..');
 const toJson = require('../lib/plugins/asJson');
@@ -11,12 +11,12 @@ const log = require('../lib/plugins/logger');
 const timeout = require('../lib/plugins/timeout');
 const packageInfo = require('../package');
 
-var sandbox = sinon.sandbox.create();
+const sandbox = sinon.sandbox.create();
 
 const url = 'http://www.example.com/';
 const host = 'http://www.example.com';
 const api = nock(host);
-var path = '/';
+const path = '/';
 
 const simpleResponseBody = 'Illegitimi non carborundum';
 
@@ -89,7 +89,9 @@ describe('Blackadder', () => {
 
       const response = Blackadder.createClient()
         .get(url)
-        .header('User-Agent', HeaderValue)
+        .header({
+          'User-Agent': HeaderValue
+        })
         .asResponse();
 
       return response
@@ -140,16 +142,43 @@ describe('query strings', () => {
 });
 
 describe('plugins', () => {
-  it('supports global plugins');
+  it('supports a per request plugin', () => {
+    nock.cleanAll();
+    api.get(path).times(2).reply(200, simpleResponseBody);
 
-  describe('asJson', () => {
+    const toUpperCase = () => {
+      return (ctx, next) => {
+        return next().then(() => {
+          ctx.res.body = ctx.res.body.toUpperCase();
+        });
+      };
+    };
+    const client = Blackadder.createClient();
+
+    const upperCaseResponse = client
+      .get(url, toUpperCase())
+      .asBody();
+
+    const lowerCaseResponse = client
+      .get(url)
+      .asBody();
+
+    return Promise.all([upperCaseResponse, lowerCaseResponse])
+      .then((results) => {
+        assert.equal(results[0], simpleResponseBody.toUpperCase());
+        assert.equal(results[1], simpleResponseBody);
+      });
+  });
+
+  describe('toJson', () => {
     it('returns body of a JSON response', () => {
       nock.cleanAll();
       api.get(path).reply(200, responseBody);
 
       const client = Blackadder.createClient();
+      client.use(toJson());
+
       return client
-        .use(toJson())
         .get(url)
         .asBody()
         .then((body) => {
