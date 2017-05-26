@@ -105,9 +105,21 @@ describe('Blackadder', () => {
         });
     });
 
-    it('asserts for a missing header');
-    it('asserts for a missing header value');
-    it('asserts an empty header object');
+    it('asserts for a missing header', () => {
+      assert.throws(() => {
+        Blackadder.createClient()
+          .get(url)
+          .headers();
+      }, Error, 'missing headers');
+    });
+
+    it('asserts an empty header object', () => {
+      assert.throws(() => {
+        Blackadder.createClient()
+          .get(url)
+          .headers({});
+      }, Error, 'empty headers object');
+    });
   });
 });
 
