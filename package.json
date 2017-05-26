@@ -1,5 +1,5 @@
 {
-  "name": "flashheart",
+  "name": "http-transport",
   "version": "2.7.1",
   "description": "A fully-featured REST client built for ease-of-use and resilience",
   "main": "index.js",

@@ -59,29 +59,32 @@ describe('Blackadder', () => {
       });
   });
 
-  // it('makes successive calls', () => {
-  //   const client = Blackadder.createClient();
-  //   const response1 = client
-  //     .get(url)
-  //     .asResponse();
+  it('sets a default User-agent', () => {
+    nock.cleanAll();
 
-  //   const response2 = client
-  //     .get(url)
-  //     .asResponse();
+    const HeaderValue = `${packageInfo.name}/${packageInfo.version}`;
+    nock(host, {
+        reqheaders: {
+          'User-Agent': HeaderValue
+        }
+      })
+      .get(path)
+      .reply(200, responseBody);
 
-  //   // .then((res) => {
-  //   //   assert.equal(res.body, simpleResponseBody);
-  //   // });
-  // });
+    return Blackadder.createClient()
+      .get(url)
+      .asResponse();
+  });
 
-  describe('.header', () => {
-    it('sends a default UA with client version', () => {
+  describe('.headers', () => {
+    it('sends a custom headers', () => {
       nock.cleanAll();
 
       const HeaderValue = `${packageInfo.name}/${packageInfo.version}`;
       nock(host, {
           reqheaders: {
-            'User-Agent': HeaderValue
+            'User-Agent': HeaderValue,
+            foo: 'bar'
           }
         })
         .get(path)
@@ -89,8 +92,9 @@ describe('Blackadder', () => {
 
       const response = Blackadder.createClient()
         .get(url)
-        .header({
-          'User-Agent': HeaderValue
+        .headers({
+          'User-Agent': HeaderValue,
+          foo: 'bar'
         })
         .asResponse();
 
@@ -101,7 +105,6 @@ describe('Blackadder', () => {
         });
     });
 
-    it('sets mutiple headers');
     it('asserts for a missing header');
     it('asserts for a missing header value');
     it('asserts an empty header object');
