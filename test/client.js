@@ -76,6 +76,14 @@ describe('Blackadder', () => {
       .asResponse();
   });
 
+  it('throws if a plugin is not a function', () => {
+    assert.throws(() => {
+      Blackadder.createClient()
+        .use('bad plugin')
+        .headers();
+    }, TypeError, 'Plugin is not a function');
+  });
+
   describe('.headers', () => {
     it('sends a custom headers', () => {
       nock.cleanAll();
@@ -118,7 +126,7 @@ describe('Blackadder', () => {
         Blackadder.createClient()
           .get(url)
           .headers({});
-      }, Error, 'empty headers object');
+      }, Error, 'missing headers');
     });
   });
 });
@@ -154,6 +162,14 @@ describe('query strings', () => {
         assert.equal(body, simpleResponseBody);
       });
   });
+
+  it('asserts empty query strings object', () => {
+    assert.throws(() => {
+      Blackadder.createClient()
+        .get(url)
+        .query({});
+    }, Error, 'missing query strings');
+  });
 });
 
 describe('plugins', () => {
@@ -183,6 +199,21 @@ describe('plugins', () => {
         assert.equal(results[0], simpleResponseBody.toUpperCase());
         assert.equal(results[1], simpleResponseBody);
       });
+  });
+
+  it('throws if a global plugin is not a function', () => {
+    assert.throws(() => {
+      Blackadder.createClient()
+        .use('bad plugin')
+        .headers();
+    }, TypeError, 'Plugin is not a function');
+  });
+
+  it('throws if a per request plugin is not a function', () => {
+    assert.throws(() => {
+      const client = Blackadder.createClient();
+      client.get(url, 'bad plugin');
+    }, TypeError, 'Plugin is not a function');
   });
 
   describe('toJson', () => {
