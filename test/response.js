@@ -29,14 +29,14 @@ describe('Response', () => {
 
   it('sets a header', () => {
     const response = Response.create();
-    response.setHeader('a', 1);
+    response.addHeader('a', 1);
 
     assert.equal(response.getHeader('a'), 1);
   });
 
   it('sets headers from an object', () => {
     const response = Response.create();
-    response.setHeader({
+    response.addHeader({
       a: 1,
       b: 2
     });
@@ -51,7 +51,7 @@ describe('Response', () => {
       a: 1,
       b: 2
     };
-    response.setHeader(headers).setHeader('c', 3);
+    response.addHeader(headers).addHeader('c', 3);
 
     assert.equal(response.getHeader('a'), 1);
     assert.equal(response.getHeader('b'), 2);
