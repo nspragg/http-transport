@@ -50,84 +50,86 @@ describe('Blackadder', () => {
     api.get(path).reply(200, simpleResponseBody);
   });
 
-  it('returns a response', () => {
-    return Blackadder.createClient()
-      .get(url)
-      .asResponse()
-      .then((res) => {
-        assert.equal(res.body, simpleResponseBody);
-      });
-  });
+  describe('.get', () => {
+    it('returns a response', () => {
+      return Blackadder.createClient()
+        .get(url)
+        .asResponse()
+        .then((res) => {
+          assert.equal(res.body, simpleResponseBody);
+        });
+    });
 
-  it('sets a default User-agent', () => {
-    nock.cleanAll();
-
-    const HeaderValue = `${packageInfo.name}/${packageInfo.version}`;
-    nock(host, {
-        reqheaders: {
-          'User-Agent': HeaderValue
-        }
-      })
-      .get(path)
-      .reply(200, responseBody);
-
-    return Blackadder.createClient()
-      .get(url)
-      .asResponse();
-  });
-
-  it('throws if a plugin is not a function', () => {
-    assert.throws(() => {
-      Blackadder.createClient()
-        .use('bad plugin')
-        .headers();
-    }, TypeError, 'Plugin is not a function');
-  });
-
-  describe('.headers', () => {
-    it('sends a custom headers', () => {
+    it('sets a default User-agent', () => {
       nock.cleanAll();
 
       const HeaderValue = `${packageInfo.name}/${packageInfo.version}`;
       nock(host, {
           reqheaders: {
-            'User-Agent': HeaderValue,
-            foo: 'bar'
+            'User-Agent': HeaderValue
           }
         })
         .get(path)
         .reply(200, responseBody);
 
-      const response = Blackadder.createClient()
+      return Blackadder.createClient()
         .get(url)
-        .headers({
+        .asResponse();
+    });
+
+    it('throws if a plugin is not a function', () => {
+      assert.throws(() => {
+        Blackadder.createClient()
+          .use('bad plugin')
+          .headers();
+      }, TypeError, 'Plugin is not a function');
+    });
+  });
+});
+
+describe('.headers', () => {
+  it('sends a custom headers', () => {
+    nock.cleanAll();
+
+    const HeaderValue = `${packageInfo.name}/${packageInfo.version}`;
+    nock(host, {
+        reqheaders: {
           'User-Agent': HeaderValue,
           foo: 'bar'
-        })
-        .asResponse();
+        }
+      })
+      .get(path)
+      .reply(200, responseBody);
 
-      return response
-        .catch(assert.ifError)
-        .then((res) => {
-          assert.equal(res.statusCode, 200);
-        });
-    });
+    const response = Blackadder.createClient()
+      .get(url)
+      .headers({
+        'User-Agent': HeaderValue,
+        foo: 'bar'
+      })
+      .asResponse();
 
-    it('asserts for a missing header', () => {
-      assert.throws(() => {
-        Blackadder.createClient()
-          .get(url)
-          .headers();
-      }, Error, 'missing headers');
-    });
+    return response
+      .catch(assert.ifError)
+      .then((res) => {
+        assert.equal(res.statusCode, 200);
+      });
+  });
 
-    it('asserts an empty header object', () => {
-      assert.throws(() => {
-        Blackadder.createClient()
-          .get(url)
-          .headers({});
-      }, Error, 'missing headers');
-    });
+  it('asserts for a missing header', () => {
+    assert.throws(() => {
+      Blackadder.createClient()
+        .get(url)
+        .headers();
+    }, Error, 'missing headers');
+  });
+
+  it('asserts an empty header object', () => {
+    assert.throws(() => {
+      Blackadder.createClient()
+        .get(url)
+        .headers({});
+    }, Error, 'missing headers');
   });
 });
 
