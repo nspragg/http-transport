@@ -53,4 +53,26 @@ describe('stats', () => {
                 sinon.assert.calledWith(stubbedStats.increment, 'my-client.feedName.requests');
             });
     });
+
+    it('increments counter response for each response', () => {
+        return Blackadder.createClient()
+            .get(url)
+            .use(stats(stubbedStats, 'my-client', 'feedName'))
+            .asBody()
+            .catch(assert.ifError)
+            .then(() => {
+                sinon.assert.calledWith(stubbedStats.increment, 'my-client.feedName.responses.200');
+            });
+    });
+
+    it('records a timer for the response time', () => {
+        return Blackadder.createClient()
+            .get(url)
+            .use(stats(stubbedStats, 'my-client', 'feedName'))
+            .asBody()
+            .catch(assert.ifError)
+            .then(() => {
+                sinon.assert.calledWith(stubbedStats.timing, 'my-client.feedName.response_time');
+            });
+    });
 });
