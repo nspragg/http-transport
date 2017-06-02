@@ -11,16 +11,17 @@ const stats = require('../lib/plugins/stats');
 const host = 'http://www.example.com';
 const url = 'http://www.example.com/';
 const api = nock(host);
+const stubbedStats = {
+    increment: sandbox.stub(),
+    timing: sandbox.stub()
+};
 
 describe('stats', () => {
-    it('increments counter http.requests for each request', () => {
+    beforeEach(() => {
         api.get('/').reply(200);
+    });
 
-        const stubbedStats = {
-            increment: sandbox.stub(),
-            timing: sandbox.stub()
-        };
-
+    it('increments counter http.requests for each request', () => {
         return Blackadder.createClient()
             .get(url)
             .use(stats(stubbedStats))
@@ -28,6 +29,28 @@ describe('stats', () => {
             .catch(assert.ifError)
             .then(() => {
                 sinon.assert.calledWith(stubbedStats.increment, 'http.requests');
+            });
+    });
+
+    it('increments counter a request counter with the name of the client if one is provided', () => {
+        return Blackadder.createClient()
+            .get(url)
+            .use(stats(stubbedStats, 'my-client'))
+            .asBody()
+            .catch(assert.ifError)
+            .then(() => {
+                sinon.assert.calledWith(stubbedStats.increment, 'my-client.requests');
+            });
+    });
+
+    it('increments a request counter with the name of the client and feed if provided', () => {
+        return Blackadder.createClient()
+            .get(url)
+            .use(stats(stubbedStats, 'my-client', 'feedName'))
+            .asBody()
+            .catch(assert.ifError)
+            .then(() => {
+                sinon.assert.calledWith(stubbedStats.increment, 'my-client.feedName.requests');
             });
     });
 });
