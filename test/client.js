@@ -80,7 +80,7 @@ describe('Blackadder', () => {
     it('throws if a plugin is not a function', () => {
       assert.throws(() => {
         Blackadder.createClient()
-          .use('bad plugin')
+          .useGlobal('bad plugin')
           .headers();
       }, TypeError, 'Plugin is not a function');
     });
@@ -189,7 +189,8 @@ describe('plugins', () => {
     const client = Blackadder.createClient();
 
     const upperCaseResponse = client
-      .get(url, toUpperCase())
+      .use(toUpperCase())
+      .get(url)
       .asBody();
 
     const lowerCaseResponse = client
@@ -206,7 +207,7 @@ describe('plugins', () => {
   it('throws if a global plugin is not a function', () => {
     assert.throws(() => {
       Blackadder.createClient()
-        .use('bad plugin')
+        .useGlobal('bad plugin')
         .headers();
     }, TypeError, 'Plugin is not a function');
   });
@@ -214,7 +215,9 @@ describe('plugins', () => {
   it('throws if a per request plugin is not a function', () => {
     assert.throws(() => {
       const client = Blackadder.createClient();
-      client.get(url, 'bad plugin');
+      client
+        .use('bad plugin')
+        .get(url);
     }, TypeError, 'Plugin is not a function');
   });
 
@@ -224,7 +227,7 @@ describe('plugins', () => {
       api.get(path).reply(200, responseBody);
 
       const client = Blackadder.createClient();
-      client.use(toJson());
+      client.useGlobal(toJson());
 
       return client
         .get(url)
@@ -244,7 +247,7 @@ describe('plugins', () => {
 
       const client = Blackadder.createClient();
       const response = client
-        .use(timeout(20))
+        .useGlobal(timeout(20))
         .get(url)
         .asBody();
 
@@ -265,7 +268,7 @@ describe('plugins', () => {
 
       return Blackadder.createClient()
         .get(url)
-        .use(log(stubbedLogger))
+        .useGlobal(log(stubbedLogger))
         .asBody()
         .catch(assert.ifError)
         .then(() => {
@@ -282,7 +285,7 @@ describe('plugins', () => {
 
       const client = Blackadder.createClient();
       const response = client
-        .use(toError())
+        .useGlobal(toError())
         .get(url)
         .asBody();
 
@@ -313,7 +316,7 @@ describe('plugins', () => {
 
       const client = Blackadder.createClient();
       const response = client
-        .use(toError())
+        .useGlobal(toError())
         .get(url)
         .asBody();
 
