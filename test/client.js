@@ -145,6 +145,24 @@ describe('Blackadder', () => {
     });
   });
 
+  describe('.patch', () => {
+    it('makes a PATCH request', () => {
+      api.patch(path).reply(204);
+      return Blackadder.createClient().patch(url);
+    });
+
+    it('returns an error when the API returns a 5XX status code', () => {
+      api.patch(path, requestBody).reply(500);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .patch(url, requestBody)
+        .asResponse();
+
+      return assertFailure(response);
+    });
+  });
+
 
   describe('.headers', () => {
     it('sends a custom headers', () => {
