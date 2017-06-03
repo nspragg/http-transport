@@ -1,5 +1,3 @@
-'use strict';
-
 const assert = require('chai').assert;
 const nock = require('nock');
 const sinon = require('sinon');
@@ -24,19 +22,11 @@ const requestBody = {
 };
 const responseBody = requestBody;
 
-function assertResponse(response, expected) {
-  assert.ok(expected);
-
-  return response
-    .catch(assert.ifError)
-    .then((actual) => assert.deepEqual(actual, expected));
-}
-
 function assertFailure(promise, message) {
   return promise
     .then(() => assert.ok(false, 'Promise should have failed'))
     .catch((e) => {
-      assert.ok(e)
+      assert.ok(e);
       if (message) {
         assert.equal(e.message, message);
       }
@@ -99,6 +89,17 @@ describe('Blackadder', () => {
         })
         .catch(assert.ifError);
     });
+
+    it('returns an error when the API returns a 5XX status code', () => {
+      api.post(path, requestBody).reply(500);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .post(url, requestBody)
+        .asResponse();
+
+      return assertFailure(response);
+    });
   });
 
   describe('.headers', () => {
@@ -148,7 +149,7 @@ describe('Blackadder', () => {
   });
 
   describe('query strings', () => {
-    it('supports adding a query string', function () {
+    it('supports adding a query string', () => {
       api.get('/?a=1').reply(200, simpleResponseBody);
 
       const client = Blackadder.createClient();
@@ -161,7 +162,7 @@ describe('Blackadder', () => {
         });
     });
 
-    it('supports multiple query strings', function () {
+    it('supports multiple query strings', () => {
       nock.cleanAll();
       api.get('/?a=1&b=2&c=3').reply(200, simpleResponseBody);
 
@@ -269,7 +270,7 @@ describe('Blackadder', () => {
       });
 
       it('default timeout');
-    })
+    });
 
     describe('logging', () => {
       it('logs each request at info level when a logger is passed in', () => {
@@ -303,7 +304,7 @@ describe('Blackadder', () => {
           .get(url)
           .asBody();
 
-        return assertFailure(response, 'Received HTTP code 500 for GET http://www.example.com/')
+        return assertFailure(response, 'Received HTTP code 500 for GET http://www.example.com/');
       });
 
       it('includes the status code in the error for a non 200 response', () => {
@@ -320,7 +321,7 @@ describe('Blackadder', () => {
           });
       });
 
-      it('includes the headers in the error for a non 200 response', function () {
+      it('includes the headers in the error for a non 200 response', () => {
         nock.cleanAll();
         api.get(path).reply(500, {
           error: 'this is the body of the error'
