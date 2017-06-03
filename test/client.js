@@ -127,6 +127,25 @@ describe('Blackadder', () => {
     });
   });
 
+  describe('.delete', () => {
+    it('makes a DELETE request', () => {
+      api.delete(path).reply(204);
+      return Blackadder.createClient().delete(url);
+    });
+
+    it('returns an error when the API returns a 5XX status code', () => {
+      api.delete(path, requestBody).reply(500);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .delete(url, requestBody)
+        .asResponse();
+
+      return assertFailure(response);
+    });
+  });
+
+
   describe('.headers', () => {
     it('sends a custom headers', () => {
       nock.cleanAll();
