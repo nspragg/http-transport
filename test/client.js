@@ -163,6 +163,29 @@ describe('Blackadder', () => {
     });
   });
 
+  describe('.head', () => {
+    it('makes a HEAD request', () => {
+      api.head(path).reply(200);
+
+      return Blackadder.createClient()
+        .head(url)
+        .asResponse((res) => {
+          assert.strictEqual(res.statusCode, 200);
+          assert.strictEqual(res.body, undefined);
+        });
+    });
+
+    it('returns an error when the API returns a 5XX status code', () => {
+      api.head(path, requestBody).reply(500);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .head(url, requestBody)
+        .asResponse();
+
+      return assertFailure(response);
+    });
+  });
 
   describe('.headers', () => {
     it('sends a custom headers', () => {
