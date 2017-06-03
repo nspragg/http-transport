@@ -102,6 +102,31 @@ describe('Blackadder', () => {
     });
   });
 
+  describe('.put', () => {
+    it('makes a PUT request with a JSON body', () => {
+      api.put(path, requestBody).reply(201, responseBody);
+
+      const client = Blackadder.createClient();
+      client
+        .put(url, requestBody)
+        .asBody()
+        .then((body) => {
+          assert.deepEqual(body, responseBody);
+        });
+    });
+
+    it('returns an error when the API returns a 5XX status code', () => {
+      api.put(path, requestBody).reply(500);
+
+      const client = Blackadder.createClient();
+      const response = client
+        .put(url, requestBody)
+        .asResponse();
+
+      return assertFailure(response);
+    });
+  });
+
   describe('.headers', () => {
     it('sends a custom headers', () => {
       nock.cleanAll();
