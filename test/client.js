@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const assert = require('chai').assert;
 const nock = require('nock');
 const sinon = require('sinon');
@@ -29,14 +30,6 @@ const toUpperCase = () => {
   };
 };
 
-const toLowerCase = () => {
-  return (ctx, next) => {
-    return next().then(() => {
-      ctx.res.body = ctx.res.body.toLowerCase();
-    });
-  };
-};
-
 function assertFailure(promise, message) {
   return promise
     .then(() => assert.ok(false, 'Promise should have failed'))
@@ -46,6 +39,15 @@ function assertFailure(promise, message) {
         assert.equal(e.message, message);
       }
     });
+}
+
+function nockRetries(retry, opts) {
+  const httpMethod = _.get(opts, 'httpMethod') || 'get';
+  const successCode = _.get(opts, 'successCode') || 200;
+
+  nock.cleanAll();
+  api[httpMethod](path).times(retry).reply(500);
+  api[httpMethod](path).reply(successCode);
 }
 
 describe('Blackadder', () => {
@@ -90,6 +92,23 @@ describe('Blackadder', () => {
       }, TypeError, 'Plugin is not a function');
     });
   });
+
+  describe('.retries', () => {
+    it('retries a given number of times for failed requests', () => {
+      nockRetries(2);
+
+      return Blackadder.createClient()
+        .get(url)
+        .retry(2)
+        .use(toError())
+        .asResponse()
+        .catch(assert.ifError)
+        .then((res) => {
+          assert.equal(res.statusCode, 200);
+        });
+    });
+  });
+
 
   describe('.post', () => {
     it('makes a POST request', () => {
