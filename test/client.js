@@ -6,7 +6,6 @@ const Blackadder = require('..');
 const toJson = require('../lib/plugins/asJson');
 const toError = require('../lib/plugins/toError');
 const log = require('../lib/plugins/logger');
-const timeout = require('../lib/plugins/timeout');
 const packageInfo = require('../package');
 
 const sandbox = sinon.sandbox.create();
@@ -21,6 +20,22 @@ const requestBody = {
   foo: 'bar'
 };
 const responseBody = requestBody;
+
+const toUpperCase = () => {
+  return (ctx, next) => {
+    return next().then(() => {
+      ctx.res.body = ctx.res.body.toUpperCase();
+    });
+  };
+};
+
+const toLowerCase = () => {
+  return (ctx, next) => {
+    return next().then(() => {
+      ctx.res.body = ctx.res.body.toLowerCase();
+    });
+  };
+};
 
 function assertFailure(promise, message) {
   return promise
@@ -279,13 +294,6 @@ describe('Blackadder', () => {
       nock.cleanAll();
       api.get(path).times(2).reply(200, simpleResponseBody);
 
-      const toUpperCase = () => {
-        return (ctx, next) => {
-          return next().then(() => {
-            ctx.res.body = ctx.res.body.toUpperCase();
-          });
-        };
-      };
       const client = Blackadder.createClient();
 
       const upperCaseResponse = client
@@ -301,6 +309,40 @@ describe('Blackadder', () => {
         .then((results) => {
           assert.equal(results[0], simpleResponseBody.toUpperCase());
           assert.equal(results[1], simpleResponseBody);
+        });
+    });
+
+    it('executes global and per request plugins', () => {
+      nock.cleanAll();
+      api.get(path).reply(200, simpleResponseBody);
+
+      const appendTagGlobally = () => {
+        return (ctx, next) => {
+          return next()
+            .then(() => {
+              ctx.res.body = 'global ' + ctx.res.body;
+            });
+        };
+      };
+
+      const appendTagPerRequestTag = () => {
+        return (ctx, next) => {
+
+          return next()
+            .then(() => {
+              ctx.res.body = 'request';
+            });
+        };
+      };
+      const client = Blackadder.createClient();
+      client.useGlobal(appendTagGlobally());
+
+      return client
+        .use(appendTagPerRequestTag())
+        .get(url)
+        .asBody()
+        .then((body) => {
+          assert.equal(body, 'global request');
         });
     });
 
@@ -347,8 +389,8 @@ describe('Blackadder', () => {
 
         const client = Blackadder.createClient();
         const response = client
-          .useGlobal(timeout(20))
           .get(url)
+          .timeout(20)
           .asBody();
 
         return assertFailure(response, 'Request failed for http://www.example.com/ ESOCKETTIMEDOUT');
