@@ -1,11 +1,11 @@
-# Blackadder
+# HttpTransport
 
 > A flexible, modular REST client built for ease-of-use and resilience
 
 ## Installation
 
 ```
-npm install --save blackadder
+npm install --save http-transport
 ```
 
 ## Features
@@ -18,7 +18,7 @@ npm install --save blackadder
 ## Usage
 
 ```js
-const client = require('blackadder').createClient();
+const client = require('http-transport').createClient();
 
 client
    .get(url)
