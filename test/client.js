@@ -98,13 +98,41 @@ describe('Blackadder', () => {
       nockRetries(2);
 
       return Blackadder.createClient()
+        .useGlobal(toError())
         .get(url)
         .retry(2)
-        .use(toError())
         .asResponse()
         .catch(assert.ifError)
         .then((res) => {
           assert.equal(res.statusCode, 200);
+        });
+    });
+
+    it('tracks retry attempts', () => {
+      nockRetries(2);
+
+      const expected = [
+        {
+          statusCode: 500,
+          reason: 'Received HTTP code 500 for GET http://www.example.com/'
+        },
+        {
+          statusCode: 500,
+          reason: 'Received HTTP code 500 for GET http://www.example.com/'
+        }
+      ];
+
+      const client = Blackadder.createClient()
+        .useGlobal(toError());
+
+      return client.get(url)
+        .retry(2)
+        .asResponse()
+        .catch(assert.ifError)
+        .then((res) => {
+          const retries = res.retries;
+          assert.equal(retries.length, 2);
+          assert.deepEqual(retries, expected);
         });
     });
   });
