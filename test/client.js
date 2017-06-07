@@ -3,7 +3,7 @@ const assert = require('chai').assert;
 const nock = require('nock');
 const sinon = require('sinon');
 
-const Blackadder = require('..');
+const HttpTransport = require('..');
 const toJson = require('../lib/plugins/asJson');
 const toError = require('../lib/plugins/toError');
 const log = require('../lib/plugins/logger');
@@ -50,7 +50,7 @@ function nockRetries(retry, opts) {
   api[httpMethod](path).reply(successCode);
 }
 
-describe('Blackadder', () => {
+describe('HttpTransport', () => {
   beforeEach(() => {
     nock.disableNetConnect();
     nock.cleanAll();
@@ -59,7 +59,7 @@ describe('Blackadder', () => {
 
   describe('.get', () => {
     it('returns a response', () => {
-      return Blackadder.createClient()
+      return HttpTransport.createClient()
         .get(url)
         .asResponse()
         .then((res) => {
@@ -79,14 +79,14 @@ describe('Blackadder', () => {
         .get(path)
         .reply(200, responseBody);
 
-      return Blackadder.createClient()
+      return HttpTransport.createClient()
         .get(url)
         .asResponse();
     });
 
     it('throws if a plugin is not a function', () => {
       assert.throws(() => {
-        Blackadder.createClient()
+        HttpTransport.createClient()
           .useGlobal('bad plugin')
           .headers();
       }, TypeError, 'Plugin is not a function');
@@ -97,7 +97,7 @@ describe('Blackadder', () => {
     it('retries a given number of times for failed requests', () => {
       nockRetries(2);
 
-      return Blackadder.createClient()
+      return HttpTransport.createClient()
         .useGlobal(toError())
         .get(url)
         .retry(2)
@@ -122,7 +122,7 @@ describe('Blackadder', () => {
         }
       ];
 
-      const client = Blackadder.createClient()
+      const client = HttpTransport.createClient()
         .useGlobal(toError());
 
       return client.get(url)
@@ -142,7 +142,7 @@ describe('Blackadder', () => {
     it('makes a POST request', () => {
       api.post(path, requestBody).reply(201, responseBody);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       return client
         .post(url, requestBody)
         .asBody()
@@ -155,7 +155,7 @@ describe('Blackadder', () => {
     it('returns an error when the API returns a 5XX status code', () => {
       api.post(path, requestBody).reply(500);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       const response = client
         .post(url, requestBody)
         .asResponse();
@@ -168,7 +168,7 @@ describe('Blackadder', () => {
     it('makes a PUT request with a JSON body', () => {
       api.put(path, requestBody).reply(201, responseBody);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       client
         .put(url, requestBody)
         .asBody()
@@ -180,7 +180,7 @@ describe('Blackadder', () => {
     it('returns an error when the API returns a 5XX status code', () => {
       api.put(path, requestBody).reply(500);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       const response = client
         .put(url, requestBody)
         .asResponse();
@@ -192,13 +192,13 @@ describe('Blackadder', () => {
   describe('.delete', () => {
     it('makes a DELETE request', () => {
       api.delete(path).reply(204);
-      return Blackadder.createClient().delete(url);
+      return HttpTransport.createClient().delete(url);
     });
 
     it('returns an error when the API returns a 5XX status code', () => {
       api.delete(path, requestBody).reply(500);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       const response = client
         .delete(url, requestBody)
         .asResponse();
@@ -210,13 +210,13 @@ describe('Blackadder', () => {
   describe('.patch', () => {
     it('makes a PATCH request', () => {
       api.patch(path).reply(204);
-      return Blackadder.createClient().patch(url);
+      return HttpTransport.createClient().patch(url);
     });
 
     it('returns an error when the API returns a 5XX status code', () => {
       api.patch(path, requestBody).reply(500);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       const response = client
         .patch(url, requestBody)
         .asResponse();
@@ -229,7 +229,7 @@ describe('Blackadder', () => {
     it('makes a HEAD request', () => {
       api.head(path).reply(200);
 
-      return Blackadder.createClient()
+      return HttpTransport.createClient()
         .head(url)
         .asResponse((res) => {
           assert.strictEqual(res.statusCode, 200);
@@ -240,7 +240,7 @@ describe('Blackadder', () => {
     it('returns an error when the API returns a 5XX status code', () => {
       api.head(path, requestBody).reply(500);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       const response = client
         .head(url, requestBody)
         .asResponse();
@@ -263,7 +263,7 @@ describe('Blackadder', () => {
         .get(path)
         .reply(200, responseBody);
 
-      const response = Blackadder.createClient()
+      const response = HttpTransport.createClient()
         .get(url)
         .headers({
           'User-Agent': HeaderValue,
@@ -280,7 +280,7 @@ describe('Blackadder', () => {
 
     it('asserts for a missing header', () => {
       assert.throws(() => {
-        Blackadder.createClient()
+        HttpTransport.createClient()
           .get(url)
           .headers();
       }, Error, 'missing headers');
@@ -288,7 +288,7 @@ describe('Blackadder', () => {
 
     it('asserts an empty header object', () => {
       assert.throws(() => {
-        Blackadder.createClient()
+        HttpTransport.createClient()
           .get(url)
           .headers({});
       }, Error, 'missing headers');
@@ -299,7 +299,7 @@ describe('Blackadder', () => {
     it('supports adding a query string', () => {
       api.get('/?a=1').reply(200, simpleResponseBody);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       return client
         .get(url)
         .query('a', 1)
@@ -313,7 +313,7 @@ describe('Blackadder', () => {
       nock.cleanAll();
       api.get('/?a=1&b=2&c=3').reply(200, simpleResponseBody);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       return client
         .get(url)
         .query({
@@ -329,7 +329,7 @@ describe('Blackadder', () => {
 
     it('asserts empty query strings object', () => {
       assert.throws(() => {
-        Blackadder.createClient()
+        HttpTransport.createClient()
           .get(url)
           .query({});
       }, Error, 'missing query strings');
@@ -341,7 +341,7 @@ describe('Blackadder', () => {
       nock.cleanAll();
       api.get(path).times(2).reply(200, simpleResponseBody);
 
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
 
       const upperCaseResponse = client
         .use(toUpperCase())
@@ -381,7 +381,7 @@ describe('Blackadder', () => {
             });
         };
       };
-      const client = Blackadder.createClient();
+      const client = HttpTransport.createClient();
       client.useGlobal(appendTagGlobally());
 
       return client
@@ -395,7 +395,7 @@ describe('Blackadder', () => {
 
     it('throws if a global plugin is not a function', () => {
       assert.throws(() => {
-        Blackadder.createClient()
+        HttpTransport.createClient()
           .useGlobal('bad plugin')
           .headers();
       }, TypeError, 'Plugin is not a function');
@@ -403,7 +403,7 @@ describe('Blackadder', () => {
 
     it('throws if a per request plugin is not a function', () => {
       assert.throws(() => {
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         client
           .use('bad plugin')
           .get(url);
@@ -415,7 +415,7 @@ describe('Blackadder', () => {
         nock.cleanAll();
         api.get(path).reply(200, responseBody);
 
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         client.useGlobal(toJson());
 
         return client
@@ -434,7 +434,7 @@ describe('Blackadder', () => {
           .socketDelay(1000)
           .reply(200, simpleResponseBody);
 
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         const response = client
           .get(url)
           .timeout(20)
@@ -455,7 +455,7 @@ describe('Blackadder', () => {
           warn: sandbox.stub()
         };
 
-        return Blackadder.createClient()
+        return HttpTransport.createClient()
           .get(url)
           .useGlobal(log(stubbedLogger))
           .asBody()
@@ -472,7 +472,7 @@ describe('Blackadder', () => {
         nock.cleanAll();
         api.get(path).reply(500);
 
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         const response = client
           .useGlobal(toError())
           .get(url)
@@ -485,7 +485,7 @@ describe('Blackadder', () => {
         nock.cleanAll();
         api.get(path).reply(500);
 
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         return client
           .get(url)
           .asBody()
@@ -503,7 +503,7 @@ describe('Blackadder', () => {
           'www-authenticate': 'Bearer realm="/"'
         });
 
-        const client = Blackadder.createClient();
+        const client = HttpTransport.createClient();
         const response = client
           .useGlobal(toError())
           .get(url)

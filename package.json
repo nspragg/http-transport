@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "jsdoc": "jsdoc -c ./docconfig/jsdoc.json",
     "lint": "eslint ./src ./test",
     "coverage": "istanbul cover _mocha -- -R dot",
     "posttest": "npm run lint"
@@ -14,6 +15,7 @@
     "url": "git+ssh://git@github.com/nspragg/http-transport.git"
   },
   "keywords": [
+    "https",
     "rest client",
     "http-transport",
     "cache",
@@ -38,7 +40,8 @@
     "mocha": "^3.0.2",
     "nock": "^9.0.4",
     "jsdoc": "^3.4.3",
-    "sinon": "^1.15.3"
+    "sinon": "^1.15.3",
+    "jsdoc": "^3.4.3"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
