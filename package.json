@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/bbc/blackadder.git"
+    "url": "git+ssh://git@github.com/nspragg/http-transport.git"
   },
   "keywords": [
     "rest client",
-    "blackadder",
+    "http-transport",
     "cache",
     "circuit",
     "breaker",
@@ -24,12 +24,12 @@
     "json",
     "client"
   ],
-  "author": "nspragg",
+  "author": "Nick Spragg",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bbc/blackadder/issues"
+    "url": "https://github.com/nspragg/http-transport/issues"
   },
-  "homepage": "https://github.com/bbc/blackadder#readme",
+  "homepage": "https://github.com/nspragg/http-transport#readme",
   "devDependencies": {
     "chai": "^3.5.0",
     "codeclimate-test-reporter": "^0.4.0",
