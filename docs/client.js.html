@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HttpTransport.html">HttpTransport</a></li></ul><h3>Global</h3><ul><li><a href="global.html#useGlobal">useGlobal</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="HttpTransport.html">HttpTransport</a></li></ul><h3>Global</h3><ul><li><a href="global.html#asBody">asBody</a></li><li><a href="global.html#asResponse">asResponse</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#head">head</a></li><li><a href="global.html#headers">headers</a></li><li><a href="global.html#post">post</a></li><li><a href="global.html#query">query</a></li><li><a href="global.html#retry">retry</a></li><li><a href="global.html#timeout">timeout</a></li><li><a href="global.html#use">use</a></li><li><a href="global.html#useGlobal">useGlobal</a></li></ul>
 </nav>
 
 <div id="main">
@@ -63,7 +63,8 @@ class HttpTransport {
    *
    * @method
    * useGlobal
-   * @return a FileHound instance
+   * @param {function} fn - a global plugin
+   * @return a HttpTransport instance
    * @example
    * const toError = require('http-transport-errors'); 
    * const httpTransport = require('http-transport');
@@ -77,12 +78,40 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Registers a per request plugin
+   *
+   * @method
+   * use
+   * @return a HttpTransport instance
+   * @param {function} fn - per request plugin
+   * @example
+   * const toError = require('http-transport-errors'); 
+   * const httpTransport = require('http-transport');
+   *  
+   * httpTransport.createClient()
+   *    .use(toError(404));
+   */
   use(plugin) {
     validatePlugin(plugin);
     this._ctx.addPlugin(plugin);
     return this;
   }
 
+  /**
+   * Make a HTTP GET request
+   *
+   * @method
+   * get
+   * @param {string} url
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .get(url)
+   *    .asResponse();
+   */
   get(url) {
     this._ctx.req
       .method('GET')
@@ -90,6 +119,21 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Make a HTTP POST request
+   *
+   * @method
+   * post
+   * @param {string} url
+   * @param {object} request body
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .post(url, requestBody)
+   *    .asResponse();
+   */
   post(url, body) {
     this._ctx.req
       .method('POST')
@@ -98,6 +142,21 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Make a HTTP PUT request
+   *
+   * @method
+   * post
+   * @param {string} url
+   * @param {object} request body
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .put(url, requestBody)
+   *    .asResponse();
+   */
   put(url, body) {
     this._ctx.req
       .method('PUT')
@@ -106,14 +165,43 @@ class HttpTransport {
     return this;
   }
 
-  delete(url, body) {
+  /**
+   * Make a HTTP DELETE request
+   *
+   * @method
+   * post
+   * @param {string} url
+   * @param {object} request body
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .delete(url)
+   *    .asResponse();
+   */
+  delete(url) {
     this._ctx.req
       .method('DELETE')
-      .body(body)
       .url(url);
     return this;
   }
 
+  /**
+   * Make a HTTP PATCH request
+   *
+   * @method
+   * post
+   * @param {string} url
+   * @param {object} request body
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .put(url, requestBody)
+   *    .asResponse();
+   */
   patch(url, body) {
     this._ctx.req
       .method('PATCH')
@@ -122,6 +210,20 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Make a HTTP HEAD request
+   *
+   * @method
+   * head
+   * @param {string} url
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .head(url)
+   *    .asResponse();
+   */
   head(url) {
     this._ctx.req
       .method('HEAD')
@@ -129,6 +231,23 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Sets the request headers
+   *
+   * @method
+   * headers
+   * @param {string|object} name - header name or headers object
+   * @param {string|object} value - header value
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .headers({
+   *      'User-Agent' : 'someUserAgent' 
+   *    })
+   *    .asResponse();
+   */
   headers() {
     rejectIfEmpty(arguments, 'missing headers');
 
@@ -139,6 +258,23 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Sets the query strings
+   *
+   * @method
+   * query
+   * @param {string|object} name - query name or query object
+   * @param {string|object} value - query value
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .query({
+   *      'perPage' : 1 
+   *    })
+   *    .asResponse();
+   */
   query() {
     rejectIfEmpty(arguments, 'missing query strings');
 
@@ -149,20 +285,80 @@ class HttpTransport {
     return this;
   }
 
+  /**
+   * Sets a request timeout
+   *
+   * @method
+   * timeout
+   * @param {integer} timeout - timeout in seconds
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .timeout(1)
+   *    .asResponse();
+   */
   timeout(secs) {
     this._ctx.req.timeout(secs);
     return this;
   }
 
+  /**
+   * Set the number of retries on failure
+   *
+   * @method
+   * retry
+   * @param {integer} timeout - number of times to retry a failed request
+   * @return a HttpTransport instance
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .retry(5)
+   *    .asResponse();
+   */
   retry(retries) {
     this._retries = retries;
     return this;
   }
 
+  /**
+   * Initiates the request, returning the response body, if successful. 
+   *
+   * @method
+   * asBody
+   * @return a Promise. If the Promise fulfils,
+   * the fulfilment value is the response body, as a string by default. 
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .asBody()
+   *    .then((body) => {
+   *      console.log(body);
+   *    });
+   */
   asBody() {
     return this.asResponse().then((res) => res.body);
   }
 
+  /**
+   * Initiates the request, returning a http transport response object, if successful. 
+   *
+   * @method
+   * asResponse
+   * @return a Promise. If the Promise fulfils,
+   * the fulfilment value is response object. 
+   * @example
+   * const httpTransport = require('http-transport');
+   *  
+   * const response = httpTransport.createClient()
+   *    .asResponse()
+   *    .then((body) => {
+   *      console.log(body);
+   *    });
+   */
   asResponse() {
     const requestContext = this._ctx;
     this._ctx = context.create();
@@ -228,14 +424,16 @@ function toRetry(err) {
 
 function retry(fn, times) {
   const calls = [];
-  let promise = fn();
-  for (let i = 0; i &lt; times; i++) {
-    promise = promise.catch((err) => {
-      calls.push(toRetry(err));
-      return fn();
+  const attempt = (i) => {
+    return fn().catch((err) => {
+      if (i &lt; times) {
+        calls.push(toRetry(err));
+        return attempt(++i);
+      }
+      throw err;
     });
-  }
-  return promise
+  };
+  return attempt(0)
     .then((ctx) => {
       ctx.res.retries = calls;
       return ctx;
@@ -255,7 +453,7 @@ module.exports = HttpTransport;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Wed Jun 07 2017 20:40:09 GMT+0100 (BST) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Fri Jun 09 2017 13:34:25 GMT+0100 (BST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
