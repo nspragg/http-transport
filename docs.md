@@ -1,4 +1,4 @@
-# Filehound
+# HttpTranport
 
 [![Build Status](https://travis-ci.org/nspragg/http-transport.svg)](https://travis-ci.org/nspragg/http-transport) [![Coverage Status](https://coveralls.io/repos/github/nspragg/http-transport/badge.svg?branch=master)](https://coveralls.io/github/nspragg/http-transport?branch=master)
 
