@@ -41,7 +41,8 @@
     "nock": "^9.0.4",
     "jsdoc": "^3.4.3",
     "sinon": "^1.15.3",
-    "jsdoc": "^3.4.3"
+    "jsdoc": "^3.4.3",
+    "coveralls": "^2.11.9"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
