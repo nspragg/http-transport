@@ -97,15 +97,8 @@ describe('HttpTransport', () => {
     it('retries a given number of times for failed requests', () => {
       nockRetries(2);
 
-      const test1 = (ctx, next) => {
-        return next()
-          .then(() => {
-            return ctx;
-          });
-      };
       return HttpTransport.createClient()
         .useGlobal(toError())
-        .useGlobal(test1)
         .get(url)
         .retry(2)
         .asResponse()
