@@ -97,15 +97,8 @@ describe('HttpTransport', () => {
     it('retries a given number of times for failed requests', () => {
       nockRetries(2);
 
-      const test1 = (ctx, next) => {
-        return next()
-          .then(() => {
-            return ctx;
-          });
-      };
       return HttpTransport.createClient()
         .useGlobal(toError())
-        .useGlobal(test1)
         .get(url)
         .retry(2)
         .asResponse()
@@ -118,17 +111,6 @@ describe('HttpTransport', () => {
     it('tracks retry attempts', () => {
       nockRetries(2);
 
-      const expected = [
-        {
-          statusCode: 500,
-          reason: 'Received HTTP code 500 for GET http://www.example.com/'
-        },
-        {
-          statusCode: 500,
-          reason: 'Received HTTP code 500 for GET http://www.example.com/'
-        }
-      ];
-
       const client = HttpTransport.createClient()
         .useGlobal(toError());
 
@@ -139,7 +121,8 @@ describe('HttpTransport', () => {
         .then((res) => {
           const retries = res.retries;
           assert.equal(retries.length, 2);
-          assert.deepEqual(retries, expected);
+          assert.equal(retries[0].statusCode, 500);
+          assert.match(retries[0].reason, /Request failed for GET http:\/\/www.example.com.*/);
         });
     });
   });
@@ -447,7 +430,7 @@ describe('HttpTransport', () => {
           .timeout(20)
           .asBody();
 
-        return assertFailure(response, 'Request failed for http://www.example.com/ ESOCKETTIMEDOUT');
+        return assertFailure(response, 'Request failed for GET http://www.example.com/: ESOCKETTIMEDOUT');
       });
 
       it('default timeout');
@@ -485,7 +468,7 @@ describe('HttpTransport', () => {
           .get(url)
           .asBody();
 
-        return assertFailure(response, 'Received HTTP code 500 for GET http://www.example.com/');
+        return assertFailure(response, 'Request failed for GET http://www.example.com/');
       });
 
       it('includes the status code in the error for a non 200 response', () => {
