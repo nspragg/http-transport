@@ -8,7 +8,7 @@ const toJson = require('../lib/plugins/asJson');
 const toError = require('../lib/plugins/toError');
 const log = require('../lib/plugins/logger');
 const packageInfo = require('../package');
-const WreckClientRequestFactory = require('../lib/transport/wreckClient');
+const WreckTransport = require('../lib/transport/wreck');
 
 const sandbox = sinon.sandbox.create();
 
@@ -60,7 +60,7 @@ describe('HttpTransport', () => {
 
   describe('.get', () => {
     it('returns a response', () => {
-      return HttpTransport.createClient(WreckClientRequestFactory)
+      return HttpTransport.createClient(WreckTransport)
         .get(url)
         .asResponse()
         .then((res) => {
@@ -80,14 +80,14 @@ describe('HttpTransport', () => {
         .get(path)
         .reply(200, responseBody);
 
-      return HttpTransport.createClient(WreckClientRequestFactory)
+      return HttpTransport.createClient(WreckTransport)
         .get(url)
         .asResponse();
     });
 
     it('throws if a plugin is not a function', () => {
       assert.throws(() => {
-        HttpTransport.createClient(WreckClientRequestFactory)
+        HttpTransport.createClient(WreckTransport)
           .useGlobal('bad plugin')
           .headers();
       }, TypeError, 'Plugin is not a function');
@@ -98,7 +98,7 @@ describe('HttpTransport', () => {
     it('retries a given number of times for failed requests', () => {
       nockRetries(2);
 
-      return HttpTransport.createClient(WreckClientRequestFactory)
+      return HttpTransport.createClient(WreckTransport)
         .useGlobal(toError())
         .get(url)
         .retry(2)
@@ -112,7 +112,7 @@ describe('HttpTransport', () => {
     it('tracks retry attempts', () => {
       nockRetries(2);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
 
       return client.get(url)
         .retry(2)
@@ -131,7 +131,7 @@ describe('HttpTransport', () => {
   describe('.post', () => {
     it('makes a POST request', () => {
       api.post(path, requestBody).reply(201, responseBody);
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       return client
         .post(url, requestBody)
         .asBody()
@@ -144,7 +144,7 @@ describe('HttpTransport', () => {
     it('returns an error when the API returns a 5XX status code', () => {
       api.post(path, requestBody).reply(500);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       const response = client
         .post(url, requestBody)
         .asResponse();
@@ -157,7 +157,7 @@ describe('HttpTransport', () => {
     it('makes a PUT request with a JSON body', () => {
       api.put(path, requestBody).reply(201, responseBody);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       client
         .put(url, requestBody)
         .asBody()
@@ -169,7 +169,7 @@ describe('HttpTransport', () => {
     it('returns an error when the API returns a 5XX status code', () => {
       api.put(path, requestBody).reply(500);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       const response = client
         .put(url, requestBody)
         .asResponse();
@@ -181,13 +181,13 @@ describe('HttpTransport', () => {
   describe('.delete', () => {
     it('makes a DELETE request', () => {
       api.delete(path).reply(204);
-      return HttpTransport.createClient(WreckClientRequestFactory).delete(url);
+      return HttpTransport.createClient(WreckTransport).delete(url);
     });
 
     it('returns an error when the API returns a 5XX status code', () => {
       api.delete(path, requestBody).reply(500);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       const response = client
         .delete(url, requestBody)
         .asResponse();
@@ -199,13 +199,13 @@ describe('HttpTransport', () => {
   describe('.patch', () => {
     it('makes a PATCH request', () => {
       api.patch(path).reply(204);
-      return HttpTransport.createClient(WreckClientRequestFactory).patch(url);
+      return HttpTransport.createClient(WreckTransport).patch(url);
     });
 
     it('returns an error when the API returns a 5XX status code', () => {
       api.patch(path, requestBody).reply(500);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       const response = client
         .patch(url, requestBody)
         .asResponse();
@@ -228,7 +228,7 @@ describe('HttpTransport', () => {
         .get(path)
         .reply(200, responseBody);
 
-      const response = HttpTransport.createClient(WreckClientRequestFactory)
+      const response = HttpTransport.createClient(WreckTransport)
         .get(url)
         .headers({
           'User-Agent': HeaderValue,
@@ -245,7 +245,7 @@ describe('HttpTransport', () => {
 
     it('asserts for a missing header', () => {
       assert.throws(() => {
-        HttpTransport.createClient(WreckClientRequestFactory)
+        HttpTransport.createClient(WreckTransport)
           .get(url)
           .headers();
       }, Error, 'missing headers');
@@ -253,7 +253,7 @@ describe('HttpTransport', () => {
 
     it('asserts an empty header object', () => {
       assert.throws(() => {
-        HttpTransport.createClient(WreckClientRequestFactory)
+        HttpTransport.createClient(WreckTransport)
           .get(url)
           .headers({});
       }, Error, 'missing headers');
@@ -264,7 +264,7 @@ describe('HttpTransport', () => {
     it('supports adding a query string', () => {
       api.get('/?a=1').reply(200, simpleResponseBody);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       return client
         .get(url)
         .query('a', 1)
@@ -278,7 +278,7 @@ describe('HttpTransport', () => {
       nock.cleanAll();
       api.get('/?a=1&b=2&c=3').reply(200, simpleResponseBody);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       return client
         .get(url)
         .query({
@@ -294,7 +294,7 @@ describe('HttpTransport', () => {
 
     it('asserts empty query strings object', () => {
       assert.throws(() => {
-        HttpTransport.createClient(WreckClientRequestFactory)
+        HttpTransport.createClient(WreckTransport)
           .get(url)
           .query({});
       }, Error, 'missing query strings');
@@ -306,7 +306,7 @@ describe('HttpTransport', () => {
       nock.cleanAll();
       api.get(path).times(2).reply(200, simpleResponseBody);
 
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
 
       const upperCaseResponse = client
         .use(toUpperCase())
@@ -346,7 +346,7 @@ describe('HttpTransport', () => {
             });
         };
       };
-      const client = HttpTransport.createClient(WreckClientRequestFactory);
+      const client = HttpTransport.createClient(WreckTransport);
       client.useGlobal(appendTagGlobally());
 
       return client
@@ -360,7 +360,7 @@ describe('HttpTransport', () => {
 
     it('throws if a global plugin is not a function', () => {
       assert.throws(() => {
-        HttpTransport.createClient(WreckClientRequestFactory)
+        HttpTransport.createClient(WreckTransport)
           .useGlobal('bad plugin')
           .headers();
       }, TypeError, 'Plugin is not a function');
@@ -368,7 +368,7 @@ describe('HttpTransport', () => {
 
     it('throws if a per request plugin is not a function', () => {
       assert.throws(() => {
-        const client = HttpTransport.createClient(WreckClientRequestFactory);
+        const client = HttpTransport.createClient(WreckTransport);
         client
           .use('bad plugin')
           .get(url);
@@ -380,7 +380,7 @@ describe('HttpTransport', () => {
         nock.cleanAll();
         api.get(path).reply(200, responseBody);
 
-        const client = HttpTransport.createClient(WreckClientRequestFactory);
+        const client = HttpTransport.createClient(WreckTransport);
         client.useGlobal(toJson());
 
         return client
@@ -399,7 +399,7 @@ describe('HttpTransport', () => {
           .delay(500)
           .reply(200, simpleResponseBody);
 
-        const client = HttpTransport.createClient(WreckClientRequestFactory);
+        const client = HttpTransport.createClient(WreckTransport);
         const response = client
           .get(url)
           .timeout(20)
@@ -419,7 +419,7 @@ describe('HttpTransport', () => {
           warn: sandbox.stub()
         };
 
-        return HttpTransport.createClient(WreckClientRequestFactory)
+        return HttpTransport.createClient(WreckTransport)
           .get(url)
           .useGlobal(log(stubbedLogger))
           .asBody()

@@ -127,7 +127,6 @@ describe('HttpTransport', () => {
     });
   });
 
-
   describe('.post', () => {
     it('makes a POST request', () => {
       api.post(path, requestBody).reply(201, responseBody);

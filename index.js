@@ -1,6 +1,6 @@
 const Client = require('./lib/client');
-const DEFAULT_REQUEST_FACTORY = require('./lib/transport/requestClient');
+const DEFAULT_TRANSPORT = require('./lib/transport/request');
 
-module.exports.createClient = (httpRequestFactory) => {
-  return new Client(httpRequestFactory || DEFAULT_REQUEST_FACTORY);
+module.exports.createClient = (httpTransport) => {
+  return new Client(httpTransport || DEFAULT_TRANSPORT);
 };
