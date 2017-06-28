@@ -8,4 +8,4 @@ module.exports.createClient = (httpTransport) => {
 };
 
 module.exports.transport = Transport;
-module.exports.transport = Context;
+module.exports.context = Context;
