@@ -2,7 +2,7 @@ const assert = require('chai').assert;
 const nock = require('nock');
 const context = require('../../lib/context');
 
-const WreckTransport = require('../../lib/transport/wreck');
+const RequestTransport = require('../../lib/transport/request');
 
 const url = 'http://www.example.com/';
 const host = 'http://www.example.com';
@@ -25,7 +25,7 @@ function createContext(url, method) {
   return ctx;
 }
 
-describe('Wreck HTTP transport', () => {
+describe('Request HTTP transport', () => {
   beforeEach(() => {
     nock.disableNetConnect();
     nock.cleanAll();
@@ -35,7 +35,7 @@ describe('Wreck HTTP transport', () => {
   describe('.createRequest', () => {
     it('makes a GET request', () => {
       const ctx = createContext(url);
-      const request = WreckTransport.createRequest(ctx);
+      const request = RequestTransport.createRequest(ctx);
       return request.execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -58,7 +58,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url);
       ctx.req.addHeader('test', 'qui curat');
 
-      const request = WreckTransport.createRequest(ctx);
+      const request = RequestTransport.createRequest(ctx);
       return request.execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -73,7 +73,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url);
       ctx.req.addQuery('a', 1);
 
-      const request = WreckTransport.createRequest(ctx);
+      const request = RequestTransport.createRequest(ctx);
       return request.execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -87,7 +87,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url, 'put');
       ctx.req.body(requestBody);
 
-      return WreckTransport.createRequest(ctx)
+      return RequestTransport.createRequest(ctx)
         .execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -101,7 +101,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url, 'post');
       ctx.req.body(requestBody);
 
-      return WreckTransport.createRequest(ctx)
+      return RequestTransport.createRequest(ctx)
         .execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -115,7 +115,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url, 'delete');
       ctx.req.body(requestBody);
 
-      return WreckTransport.createRequest(ctx)
+      return RequestTransport.createRequest(ctx)
         .execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -128,7 +128,7 @@ describe('Wreck HTTP transport', () => {
       const ctx = createContext(url, 'patch');
       ctx.req.body(requestBody);
 
-      return WreckTransport.createRequest(ctx)
+      return RequestTransport.createRequest(ctx)
         .execute()
         .catch(assert.ifError)
         .then((ctx) => {
@@ -139,20 +139,20 @@ describe('Wreck HTTP transport', () => {
     it('sets a timeout', () => {
       nock.cleanAll();
       api.get('/')
-        .delay(500)
+        .socketDelay(500)
         .reply(200, simpleResponseBody);
 
       const ctx = createContext(url);
       ctx.req.timeout(20);
 
-      return WreckTransport.createRequest(ctx)
+      return RequestTransport.createRequest(ctx)
         .execute()
         .then(() => {
           assert.fail('Expected request to timeout');
         })
         .catch((e) => {
           assert.ok(e);
-          assert.equal(e.message, 'Request failed for get http://www.example.com/: Client request timeout');
+          assert.equal(e.message, 'Request failed for get http://www.example.com/: ESOCKETTIMEDOUT');
         });
     });
   });
