@@ -80,7 +80,6 @@
     "bluebird": "^3.5.0",
     "koa-compose": "^4.0.0",
     "lodash": "^4.17.4",
-    "request": "2.78.0",
-    "wreck" : "12.2.2"
+    "request": "2.78.0"
   }
 }
