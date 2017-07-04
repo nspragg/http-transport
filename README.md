@@ -30,6 +30,12 @@ client
 ## Documentation
 For more examples and API details, see [API documentation](https://nspragg.github.io/http-transport/)
 
+## Test
+
+```
+npm test
+```
+
 To generate a test coverage report:
 
 ```
