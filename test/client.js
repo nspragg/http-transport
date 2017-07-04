@@ -57,6 +57,10 @@ describe('HttpTransport', () => {
     api.get(path).reply(200, simpleResponseBody);
   });
 
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   describe('.get', () => {
     it('returns a response', () => {
       return HttpTransport.createClient()
@@ -451,6 +455,20 @@ describe('HttpTransport', () => {
           .catch(assert.ifError)
           .then(() => {
             const message = stubbedLogger.info.getCall(0).args[0];
+            assert.match(message, /GET http:\/\/www.example.com\/ 200 \d+ ms/);
+          });
+      });
+
+      it('uses default logger', () => {
+        sandbox.stub(console, 'info');
+        return HttpTransport.createClient()
+          .get(url)
+          .useGlobal(log())
+          .asBody()
+          .catch(assert.ifError)
+          .then(() => {
+            /*eslint no-console: ["error", { allow: ["info"] }] */
+            const message = console.info.getCall(0).args[0];
             assert.match(message, /GET http:\/\/www.example.com\/ 200 \d+ ms/);
           });
       });
