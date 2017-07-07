@@ -1,11 +1,11 @@
 # License
 
-Minami is free software, licensed under the Apache License, Version 2.0 (the
+Docdash is free software, licensed under the Apache License, Version 2.0 (the
 "License"). Commercial and non-commercial use are permitted in compliance with
 the License.
 
-Copyright (c) 2014-2015 Nijiko Yonskai <nijikokun@gmail.com> and the
-[contributors to Minami](https://github.com/Nijikokun/minami/graphs/contributors).
+Copyright (c) 2016 Clement Moron <clenemt@gmail.com> and the
+[contributors to docdash](https://github.com/clenemt/docdash/graphs/contributors).
 All rights reserved.
 
 You may obtain a copy of the License at:
@@ -23,12 +23,12 @@ As stated in Section 7, "Disclaimer of Warranty," of the License:
 > appropriateness of using or redistributing the Work and assume any risks
 > associated with Your exercise of permissions under this License.
 
-The source code for JSDoc 3 is available at:
-https://github.com/Nijikokun/minami
+The source code for docdash is available at:
+https://github.com/clenemt/docdash
 
 # Third-Party Software
 
-Minami includes or depends upon the following third-party software, either in
+Docdash includes or depends upon the following third-party software, either in
 whole or in part. Each third-party software package is provided under its own
 license.
 
@@ -38,7 +38,7 @@ JSDoc 3 is free software, licensed under the Apache License, Version 2.0 (the
 "License"). Commercial and non-commercial use are permitted in compliance with
 the License.
 
-Copyright (c) 2011-2015 Michael Mathews <micmath@gmail.com> and the
+Copyright (c) 2011-2016 Michael Mathews <micmath@gmail.com> and the
 [contributors to JSDoc](https://github.com/jsdoc3/jsdoc/graphs/contributors).
 All rights reserved.
 

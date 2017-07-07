@@ -289,8 +289,6 @@ function attachModuleSymbols(doclets, modules) {
 
 function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
     var nav = '';
-    var conf = env.conf.templates || {};
-    conf.default = conf.default || {};
 
     if (items && items.length) {
         var itemsNav = '';
@@ -298,26 +296,27 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
         items.forEach(function(item) {
             var methods = find({kind:'function', memberof: item.longname});
             var members = find({kind:'member', memberof: item.longname});
+            var docdash = env && env.conf && env.conf.docdash || {};
 
             if ( !hasOwnProp.call(item, 'longname') ) {
                 itemsNav += '<li>' + linktoFn('', item.name);
                 itemsNav += '</li>';
             } else if ( !hasOwnProp.call(itemsSeen, item.longname) ) {
-                var displayName;
-                if (!!conf.default.useLongnameInNav) {
-                    displayName = item.longname;
-                    if(conf.default.useLongnameInNav > 0 && conf.default.useLongnameInNav !== true){
-                        var num = conf.default.useLongnameInNav;
-                        var cropped = item.longname.split(".").slice(-num).join(".");
-                        if(cropped !== displayName){
-                            displayName = "..." + cropped;
-                        }
-                    }
-                } else {
-                    displayName = item.name;
+                itemsNav += '<li>' + linktoFn(item.longname, item.name.replace(/^module:/, ''));
+
+                if (docdash.static && members.find(function (m) { return m.scope === 'static'; } )) {
+                    itemsNav += "<ul class='members'>";
+
+                    members.forEach(function (member) {
+                        if (!member.scope === 'static') return;
+                        itemsNav += "<li data-type='member'>";
+                        itemsNav += linkto(member.longname, member.name);
+                        itemsNav += "</li>";
+                    });
+
+                    itemsNav += "</ul>";
                 }
 
-                itemsNav += '<li>' + linktoFn(item.longname, displayName.replace(/^module:/g, ''));
                 if (methods.length) {
                     itemsNav += "<ul class='methods'>";
 
@@ -329,6 +328,7 @@ function buildMemberNav(items, itemHeading, itemsSeen, linktoFn) {
 
                     itemsNav += "</ul>";
                 }
+
                 itemsNav += '</li>';
                 itemsSeen[item.longname] = true;
             }
@@ -362,8 +362,10 @@ function linktoExternal(longName, name) {
  * @param {array<object>} members.tutorials
  * @param {array<object>} members.events
  * @param {array<object>} members.interfaces
- * @return {string} The HTML for the navigation sidebar.
+ * @return {s
+ ring} The HTML for the navigation sidebar.
  */
+
 function buildNav(members) {
     var nav = '<h2><a href="index.html">Home</a></h2>';
     var seen = {};
@@ -406,6 +408,7 @@ function buildNav(members) {
     @param {Tutorial} tutorials
  */
 exports.publish = function(taffyData, opts, tutorials) {
+    var docdash = env && env.conf && env.conf.docdash || {};
     data = taffyData;
 
     var conf = env.conf.templates || {};
@@ -432,7 +435,8 @@ exports.publish = function(taffyData, opts, tutorials) {
     helper.setTutorials(tutorials);
 
     data = helper.prune(data);
-    data.sort('longname, version, since');
+
+    docdash.sort !== false && data.sort('longname, version, since');
     helper.addEventListeners(data);
 
     var sourceFiles = {};
