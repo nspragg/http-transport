@@ -141,7 +141,7 @@ HttpTransport.createClient(Wreck)
 
 #### Offical plugins
 
-See [Callbacks](http-transport-callbacks)
+See [Callbacks](https://github.com/nspragg/http-transport-callbacks)
 
 See [Wreck](https://github.com/nspragg/http-transport-wreck)
 
@@ -150,6 +150,8 @@ See [Ratelimiting](https://github.com/niklasR/http-transport-simple-rate-limiter
 See [Caching](https://github.com/DaMouse404/http-transport-cache)
 
 See [Errors](https://github.com/nspragg/http-transport-to-error)
+
+See [Response validation](DaMouse404/http-transport-response-validator)
 
 See [Circuit-breaker](https://github.com/nspragg/breaker)
 
