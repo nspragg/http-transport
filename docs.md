@@ -151,7 +151,7 @@ See [Caching](https://github.com/DaMouse404/http-transport-cache)
 
 See [Errors](https://github.com/nspragg/http-transport-to-error)
 
-See [Response validation](DaMouse404/http-transport-response-validator)
+See [Response validation](https://github.com/DaMouse404/http-transport-response-validator)
 
 See [Circuit-breaker](https://github.com/nspragg/breaker)
 
