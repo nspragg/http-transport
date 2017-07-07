@@ -121,7 +121,7 @@ HttpTransport.createClient()
 
 #### Using alternative HTTP clients
 
-Make a HTTP GET request using an alternative HTTP transport:
+Make a HTTP GET request and supply a alternative HTTP transport via `.createClient`
 
 ```js
 const url = 'http://example.com/';
@@ -140,12 +140,19 @@ HttpTransport.createClient(Wreck)
 ```
 
 #### Offical plugins
-See [Stats](https://github.com/nspragg/stats)
 
-See [Caching](https://github.com/nspragg/caching)
+See [Callbacks](http-transport-callbacks)
 
-See [Errors](https://github.com/nspragg/errors)
+See [Wreck](https://github.com/nspragg/http-transport-wreck)
 
-See [Logging](https://github.com/nspragg/logger)
+See [Ratelimiting](https://github.com/niklasR/http-transport-simple-rate-limiter)
+
+See [Caching](https://github.com/DaMouse404/http-transport-cache)
+
+See [Errors](https://github.com/nspragg/http-transport-to-error)
 
 See [Circuit-breaker](https://github.com/nspragg/breaker)
+
+See [Stats](https://github.com/nspragg/stats)
+
+See [Logging](https://github.com/nspragg/logger)
