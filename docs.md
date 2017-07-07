@@ -77,7 +77,7 @@ Make a HTTP GET request specifiying request headers using `.headers`
 Convert `Internal Server` responses (500) to errors:
 
 ```js
-    const toError = require('http-transport-errors');
+    const toError = require('http-transport-to-errors');
 
     const url = 'http://example.com/';
     const client = HttpTransport.createClient();
@@ -92,31 +92,60 @@ Convert `Internal Server` responses (500) to errors:
 
 #### Retries
 
-Make a HTTP GET request specifiying request headers using `.query`
+Make a HTTP GET and retry twice on error `.retry`
 
 ```js
+const toError = require('http-transport-to-errors');
 
+return HttpTransport.createClient()
+        .useGlobal(toError())
+        .get('http://example.com/')
+        .retry(2)
+        .asResponse()
+        .catch(assert.ifError)
+        .then((res) => {
+          assert.equal(res.statusCode, 200);
+        });
 ```
 
 #### Timeouts
 
-Make a HTTP GET request specifiying request headers using `.query`
+Make a HTTP GET and timeout after 50ms `.query`
 
 ```js
-
+HttpTransport.createClient()
+      .get(url)
+      .timeout(50)
+      .asBody();
 ```
 
 #### Using alternative HTTP clients
 
-Make a HTTP GET request specifiying request headers using `.query`
+Make a HTTP GET request using an alternative HTTP transport:
 
 ```js
+const url = 'http://example.com/';
+const HttpTransport = require('http-transport');
+const Wreck = require('http-transport-wreck');
 
+HttpTransport.createClient(Wreck)
+   .get(url)
+   .asResponse()
+   .then((res) => {
+     if (res.statusCode === 200) {
+       console.log(res.body);
+     }
+   });
+});
 ```
 
 #### Offical plugins
 See [Stats](https://github.com/nspragg/stats)
+
 See [Caching](https://github.com/nspragg/caching)
+
 See [Errors](https://github.com/nspragg/errors)
+
 See [Logging](https://github.com/nspragg/logger)
+
 See [Circuit-breaker](https://github.com/nspragg/breaker)
