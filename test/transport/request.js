@@ -35,8 +35,8 @@ describe('Request HTTP transport', () => {
   describe('.createRequest', () => {
     it('makes a GET request', () => {
       const ctx = createContext(url);
-      const request = RequestTransport.createRequest(ctx);
-      return request.execute()
+      const request = new RequestTransport();
+      return request.execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 200);
@@ -58,8 +58,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url);
       ctx.req.addHeader('test', 'qui curat');
 
-      const request = RequestTransport.createRequest(ctx);
-      return request.execute()
+      const request = new RequestTransport();
+      return request.execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 200);
@@ -73,8 +73,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url);
       ctx.req.addQuery('a', 1);
 
-      const request = RequestTransport.createRequest(ctx);
-      return request.execute()
+      const request = new RequestTransport();
+      return request.execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 200);
@@ -87,8 +87,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url, 'put');
       ctx.req.body(requestBody);
 
-      return RequestTransport.createRequest(ctx)
-        .execute()
+      return new RequestTransport()
+        .execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 201);
@@ -101,8 +101,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url, 'post');
       ctx.req.body(requestBody);
 
-      return RequestTransport.createRequest(ctx)
-        .execute()
+      return new RequestTransport()
+        .execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 201);
@@ -115,8 +115,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url, 'delete');
       ctx.req.body(requestBody);
 
-      return RequestTransport.createRequest(ctx)
-        .execute()
+      return new RequestTransport()
+        .execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 204);
@@ -128,8 +128,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url, 'patch');
       ctx.req.body(requestBody);
 
-      return RequestTransport.createRequest(ctx)
-        .execute()
+      return new RequestTransport()
+        .execute(ctx)
         .catch(assert.ifError)
         .then((ctx) => {
           assert.equal(ctx.res.statusCode, 204);
@@ -145,8 +145,8 @@ describe('Request HTTP transport', () => {
       const ctx = createContext(url);
       ctx.req.timeout(20);
 
-      return RequestTransport.createRequest(ctx)
-        .execute()
+      return new RequestTransport()
+        .execute(ctx)
         .then(() => {
           assert.fail('Expected request to timeout');
         })

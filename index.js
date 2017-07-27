@@ -5,8 +5,8 @@ module.exports.transport = require('./lib/transport/transport');
 module.exports.context = require('./lib/context');
 module.exports.toJson = require('./lib/plugins/asJson');
 
-module.exports.createClient = (httpTransport) => new Client(httpTransport || DEFAULT_TRANSPORT);
+module.exports.createClient = (httpTransport) => new Client(httpTransport || this.getDefaultTransport());
 
 module.exports.getDefaultTransport = () => {
-  return DEFAULT_TRANSPORT;
+  return new DEFAULT_TRANSPORT;
 };
