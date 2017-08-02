@@ -1,6 +1,7 @@
 const assert = require('chai').assert;
 const nock = require('nock');
 const context = require('../../lib/context');
+const sinon = require('sinon');
 
 const RequestTransport = require('../../lib/transport/request');
 
@@ -154,6 +155,33 @@ describe('Request HTTP transport', () => {
           assert.ok(e);
           assert.equal(e.message, 'Request failed for get http://www.example.com/: ESOCKETTIMEDOUT');
         });
+    });
+
+    it('override default request', () => {
+      nock.cleanAll();
+      api.get('/')
+        .socketDelay(500)
+        .reply(200, simpleResponseBody);
+
+      const res = {
+        body: simpleResponseBody,
+        elapsedTime: 10,
+        url: 'wheves',
+        statusCode: 200,
+        headers: []
+      };
+
+      const ctx = createContext(url);
+      const customeRequest = {
+        getAsync: sinon.stub().returns(Promise.resolve(res))
+      };
+
+      return new RequestTransport(customeRequest)
+        .execute(ctx)
+        .then(() => {
+          sinon.assert.calledOnce(customeRequest.getAsync);
+        })
+        .catch(assert.ifError);
     });
   });
 });
